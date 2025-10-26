@@ -1,0 +1,94 @@
+// -*- mode: jsonc -*-
+{
+    "height": 30,
+    "css_file": "/home/jacopo/.config/waybar/style.css",
+    "spacing": 4,
+    "modules-left": [
+        "sway/workspaces",
+        "sway/mode",
+        "sway/window"
+    ],
+    "modules-right": [
+        "pulseaudio",
+        "network",
+        "cpu",
+        "memory",
+        "temperature",
+        "backlight",
+        "battery",
+        "clock",
+        "tray",
+		"custom/power"
+    ],
+    "sway/mode": {
+        "format": "<span style=\"italic\">{}</span>"
+    },
+    "tray": {
+        "spacing": 10
+    },
+    "clock": {
+        "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
+        "format-alt": "{:%Y-%m-%d}"
+    },
+    "cpu": {
+        "format": "{usage}% <span font_size='x-large'></span>",
+        "tooltip": false
+    },
+    "memory": {
+        "format": "{}% <span font_size='x-large'></span>"
+    },
+    "temperature": {
+        "critical-threshold": 80,
+        "format": "{temperatureC}°C <span font_size='x-large'>{icon}</span>",
+        "format-icons": ["", "", ""]
+    },
+    "backlight": {
+        "format": "{percent}% <span font_size='x-large'>{icon}</span>",
+        "format-icons": ["", "", "", "", "", "", "", "", ""]
+    },
+    "battery": {
+        "states": {
+            "warning": 30,
+            "critical": 15
+        },
+        "format": "{capacity}% <span font_size='x-large'>{icon}</span>",
+        "format-full": "{capacity}% <span font_size='x-large'>{icon}</span>",
+        "format-charging": "{capacity}% <span font_size='x-large'></span>",
+        "format-plugged": "{capacity}% <span font_size='x-large'></span>",
+        "format-alt": "{time} <span font_size='x-large'>{icon}</span>",
+        "format-icons": ["", "", "", "", ""]
+    },
+    "network": {
+        "format-wifi": "{essid} ({signalStrength}%) <span font_size='x-large'></span>",
+        "format-ethernet": "{ipaddr}/{cidr} <span font_size='x-large'></span>",
+        "tooltip-format": "{ifname} via {gwaddr} <span font_size='x-large'></span>",
+        "format-linked": "{ifname} (No IP) <span font_size='x-large'></span>",
+        "format-disconnected": "Disconnected <span font_size='x-large'>⚠</span>",
+        "format-alt": "{ifname}: {ipaddr}/{cidr}"
+    },
+    "pulseaudio": {
+        "format": "{volume}% <span font_size='x-large'>{icon}</span> {format_source}",
+        "format-bluetooth": "{volume}% <span font_size='x-large'>{icon}</span><span font_size='x-large'></span> {format_source}",
+        "format-bluetooth-muted": "<span font_size='x-large'></span> <span font_size='x-large'>{icon}</span><span font_size='x-large'></span> {format_source}",
+        "format-muted": "<span font_size='x-large'></span> {format_source}",
+        "format-source": "{volume}% <span font_size='x-large'></span>",
+        "format-source-muted": "<span font_size='x-large'></span>",
+        "format-icons": {
+            "headphone": "",
+            "hands-free": "",
+            "headset": "",
+            "phone": "",
+            "portable": "",
+            "car": "",
+            "default": ["", "", ""]
+        },
+        "on-click": "pavucontrol"
+    },
+	"custom/power": {
+    "format": "⏻",
+    "tooltip": "Menu alimentazione",
+    "on-click": "~/.config/waybar/power-menu.sh",
+    "interval": 0
+	}
+
+}
