@@ -49,7 +49,7 @@ set history=100
 " Abilita il menu di auto completamento quando digiti TAB.
 set wildmenu
 
-colorscheme retrobox
+colorscheme default
 
 " Rende il comportamento di wildmenu simile a quello del completamento in Bash.
 set wildmode=list:longest
@@ -79,6 +79,9 @@ call plug#begin('~/.vim/plugged')
  
 " plug per l'integrazione dei comandi di gradle in vim
   Plug 'hdiniz/vim-gradle'
+
+"plug per il copia e incolla su wayland
+  Plug 'jasonccox/vim-wayland-clipboard'
 
 " plug per facilitare l'uso di snippets predefiniti
 " in questo momento usato per generare javadoc
