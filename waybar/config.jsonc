@@ -1,7 +1,7 @@
 // -*- mode: jsonc -*-
 {
     "height": 30,
-    "css_file": "/home/jacopo/.config/waybar/style.css",
+    "css_file": "/home/steppasecca/.config/waybar/style.css",
     "spacing": 4,
     "modules-left": [
         "sway/workspaces",
@@ -10,6 +10,7 @@
     ],
     "modules-right": [
         "pulseaudio",
+		"sway/language",
         "network",
         "cpu",
         "memory",
@@ -23,6 +24,12 @@
     "sway/mode": {
         "format": "<span style=\"italic\">{}</span>"
     },
+
+	"sway/language": {
+		"format": "<span>{short}</span>", 
+		"tooltip": true,
+		"on-click": "swaymsg input type:keyboard xkb_switch_layout next"
+	},
     "tray": {
         "spacing": 10
     },
@@ -34,9 +41,11 @@
         "format": "{usage}% <span font_size='x-large'></span>",
         "tooltip": false
     },
-    "memory": {
-        "format": "{}% <span font_size='x-large'></span>"
-    },
+	"memory": { "format": "{percentage}% <span font_size='x-large'></span>",
+	"format-alt": "{used:0.1f}GB <span font_size='x-large'></span>",
+	"on-click": "waybar-msg module memory format alt",
+	"tooltip": false
+	},
     "temperature": {
         "critical-threshold": 80,
         "format": "{temperatureC}°C <span font_size='x-large'>{icon}</span>",

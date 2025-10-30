@@ -81,6 +81,14 @@ inoremap <C-s> <Esc>:update<CR>a
 "quicksave command
 noremap <C-s> :update<CR>
 inoremap <C-s> <Esc>:update<CR>a
+
+"delete highlighted search
+noremap <C-n> :nohl<CR>
+
+"rimane in modalità visual mentre indento blocchi di codice
+vnoremap < <gv 
+vnoremap > >gv
+
 "}}}
 
 "STATUSLINE--------------------------------------{{{

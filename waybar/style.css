@@ -54,7 +54,18 @@ window#waybar {
 #pulseaudio.muted {
     color: #F38BA8;
 }
+/*keyboard layout*/
+#sway-language {
+    padding: 0 10px;
+    margin: 0 3px;
+    border-radius: 4px;
+    background: #313244; /* come gli altri */
+    color: #CDD6F4;
+}
 
+#sway-language:hover {
+    background: #45475A;
+}
 /* Rete */
 #network.disconnected {
     color: #F38BA8;
