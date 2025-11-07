@@ -1,6 +1,6 @@
 /* Font generale per tutta la Waybar */
 * {
-    font-family: "JetBrainsMono Nerd Font", "Font Awesome 6 Free", "Font Awesome 6 Brands", sans-serif;
+    font-family: "JetBrainsMono Nerd Font","JetBrainsMono", "Font Awesome 6 Free", "Font Awesome 6 Brands", sans-serif;
     font-size: 13px;
     min-height: 0;
 }

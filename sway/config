@@ -18,14 +18,14 @@ set $menu /usr/bin/wofi
 #browser
 set $browser /usr/bin/firefox
 #file manager
-set $file_manager /usr/bin/pcmanfm
+set $file_manager /snap/.bin/yazy
 
-font pango:JetBrainsMono Nerd Font 13
+font pango:JetBrainsMono 13
 
 ### Output configuration
 #
 # Default wallpaper (more resolutions are available in /usr/share/backgrounds/sway/)
-output * bg ~/Pictures/tmux_dark_wallpaper.jpg fill
+output * bg ~/Pictures/tor-browser.jpg fill
 #
 # Example configuration:
 #
@@ -38,7 +38,9 @@ output * bg ~/Pictures/tmux_dark_wallpaper.jpg fill
 exec swayidle -w \
 	timeout 900 'swaylock -f' \
 	timeout 1805 'swaymsg "output * power off"' \
-		resume 'swaymsg "output * power on"'
+		resume 'swaymsg "output * power on"' \
+	lock 'swaylock -f' \
+	before-sleep 'swaylock -f'
 #
 # This will lock your screen after 900 seconds(15 minutes) of inactivity, then turn off
 # your displays after another 900 seconds, and turn your screens back on when
@@ -74,7 +76,7 @@ exec swayidle -w \
     bindsym $mod+d exec  $menu --show drun
 
 	#start the file manager
-	bindsym $mod+shift+f exec $file_manager
+	bindsym $mod+y exec $file_manager
 
 	#change beetwin keyboard layout
 	bindsym $mod+Shift+space exec swaymsg input type:keyboard xkb_switch_layout next
@@ -214,7 +216,12 @@ bindsym $mod+r mode "resize"
     # Special keys to adjust brightness via brightnessctl
     bindsym --locked XF86MonBrightnessDown exec brightnessctl set 5%-
     bindsym --locked XF86MonBrightnessUp exec brightnessctl set 5%+
+#################################
+# Retroilluminazione Tastiera (light)
+#################################
 
+# Tasto funzione per il toggle (Accendi/Spegni) della retroilluminazione
+bindsym --locked  XF86KbdLightOnOff exec sudo /home/steppasecca/.bin/kbd-toggle.sh
 #sh script that open a menu in which you can choose to take 
 #or not the screeshot or if needs to be copied in the clipboard 
 bindsym Print exec ~/.dotfiles/sway/screenshot_selector.sh

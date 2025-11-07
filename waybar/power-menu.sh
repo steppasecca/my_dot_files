@@ -5,8 +5,8 @@ chosen=$(printf "  Blocca\n󰤄  Sospendi\n󰗼  Riavvia\n  Spegni\n󰗼  
 
 case "$chosen" in
     "  Blocca") swaylock ;;
-    "󰤄  Sospendi") loginctl suspend ;;
-    "󰗼  Riavvia") loginctl reboot ;;
-    "  Spegni") loginctl poweroff ;;
+    "󰤄  Sospendi") systemctl suspend ;;
+    "󰗼  Riavvia") systemctl reboot ;;
+    "  Spegni") systemctl poweroff ;;
     "󰗼  Esci da Sway") swaymsg exit ;;
 esac
