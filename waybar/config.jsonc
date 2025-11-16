@@ -21,6 +21,15 @@
         "tray",
 		"custom/power"
     ],
+	"sway/workspaces": {
+        "persistent_workspaces": {
+            "1": [], // Workspace 1 sempre visibile
+            "2": [], // Workspace 2 sempre visibile
+            "3": [], // Workspace 3 sempre visibile
+            "4": [], // Workspace 4 sempre visibile
+            "5": []  // E così via per i workspace che vuoi sempre vedere
+        }
+    },
     "sway/mode": {
         "format": "<span style=\"italic\">{}</span>"
     },
@@ -96,7 +105,7 @@
 	"custom/power": {
     "format": "⏻",
     "tooltip": "Menu alimentazione",
-    "on-click": "~/.config/waybar/power-menu.sh",
+    "on-click": "~/.config/waybar/scripts/power-menu.sh",
     "interval": 0
 	}
 

@@ -18,7 +18,7 @@ set $menu /usr/bin/wofi
 #browser
 set $browser /usr/bin/firefox
 #file manager
-set $file_manager /usr/bin/pcmanfm
+set $file_manager /usr/bin/yazi
 
 font pango:JetBrainsMono Nerd Font 13
 
@@ -38,7 +38,8 @@ output * bg ~/Pictures/tmux_dark_wallpaper.jpg fill
 exec swayidle -w \
 	timeout 900 'swaylock -f' \
 	timeout 1805 'swaymsg "output * power off"' \
-		resume 'swaymsg "output * power on"'
+		resume 'swaymsg "output * power on"' \
+	before-sleep 'swaylock -f'
 #
 # This will lock your screen after 900 seconds(15 minutes) of inactivity, then turn off
 # your displays after another 900 seconds, and turn your screens back on when
@@ -61,7 +62,7 @@ exec swayidle -w \
 #
 
 #----------------------------keybinds----------------------------
-# Start a terminal
+	# Start a terminal
     bindsym $mod+Return exec $term
 
     #start browser
@@ -74,7 +75,7 @@ exec swayidle -w \
     bindsym $mod+d exec  $menu --show drun
 
 	#start the file manager
-	bindsym $mod+shift+f exec $file_manager
+	bindsym $mod+y exec $term $file_manager
 
 	#change beetwin keyboard layout
 	bindsym $mod+Shift+space exec swaymsg input type:keyboard xkb_switch_layout next
