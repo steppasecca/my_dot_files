@@ -24,7 +24,11 @@
     "sway/mode": {
         "format": "<span style=\"italic\">{}</span>"
     },
-
+	"sway/workspaces": {
+		"all-outputs": true,
+		"format": "{index}",
+		"persistent_workspaces": true
+    },
 	"sway/language": {
 		"format": "<span>{short}</span>", 
 		"tooltip": true,

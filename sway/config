@@ -224,7 +224,7 @@ bindsym $mod+r mode "resize"
 bindsym --locked  XF86KbdLightOnOff exec sudo /home/steppasecca/.bin/kbd-toggle.sh
 #sh script that open a menu in which you can choose to take 
 #or not the screeshot or if needs to be copied in the clipboard 
-bindsym Print exec ~/.dotfiles/sway/screenshot_selector.sh
+bindsym Print exec ~/.config/sway/screenshot_selector.sh
 
 #
 # Status Bar:

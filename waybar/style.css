@@ -13,9 +13,6 @@ window#waybar {
 }
 
 /* Moduli (spaziatura e stile di base) */
-#workspaces button,
-#mode,
-#window,
 #cpu,
 #memory,
 #temperature,
@@ -44,12 +41,24 @@ window#waybar {
     background: #45475A;
 }
 
-/* Workspace attivo */
-#workspaces button.focused {
-    background: #A6E3A1;
-    color: #1E1E2E;
+/* Colore del testo/icona per i workspace NON attivi e leggibili */
+#workspaces button {
+    /* Imposta il colore del testo su un colore chiaro e leggibile */
+    color: #CDD6F4; /* Testo chiaro, come il testo principale della barra */
+    background: #313244;
 }
 
+/* Colore per distinguere i moduli di sinistra */
+#mode,
+#window {
+    background: #313244;
+    color: #FAB387; /* Giallo/Arancio chiaro per il testo di Modalità e Finestra */
+}
+/* Lo stile per il workspace attivo */
+#workspaces button.focused {
+    background: #A6E3A1;
+    color: #1E1E2E; /* Testo scuro su sfondo chiaro, leggibile */
+}
 /* Volume */
 #pulseaudio.muted {
     color: #F38BA8;
