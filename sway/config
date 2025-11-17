@@ -18,14 +18,14 @@ set $menu /usr/bin/wofi
 #browser
 set $browser /usr/bin/firefox
 #file manager
-set $file_manager /usr/bin/pcmanfm
+set $file_manager /usr/bin/yazi
 
 font pango:JetBrainsMono Nerd Font 13
 
 ### Output configuration
 #
 # Default wallpaper (more resolutions are available in /usr/share/backgrounds/sway/)
-output * bg ~/Pictures/tmux_dark_wallpaper.jpg fill
+output * bg ~/Pictures/tor_computer_wallpaper.png fill
 #
 # Example configuration:
 #

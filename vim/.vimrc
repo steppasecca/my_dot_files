@@ -67,6 +67,12 @@ augroup filetype_vim
     autocmd!
     autocmd FileType vim setlocal foldmethod=marker
 augroup END
+
+"ricarica in automatico .vimrc quando viene salvato
+augroup automaticallySourceVimrc
+  au!
+  au bufwritepost .vimrc source ~/.vimrc
+augroup END
 "}}}
 
 "MAPPINGS-----------------------------------------{{{
@@ -88,6 +94,10 @@ noremap <C-n> :nohl<CR>
 "rimane in modalità visual mentre indento blocchi di codice
 vnoremap < <gv 
 vnoremap > >gv
+
+"aggiunge la riga senza uscire da norm mode
+nnoremap zj o<ESC>k
+nnoremap zk O<ESC>j
 
 "}}}
 
