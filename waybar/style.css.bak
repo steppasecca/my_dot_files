@@ -1,0 +1,114 @@
+/* Font generale per tutta la Waybar */
+* {
+    font-family: "JetBrainsMono Nerd Font","JetBrainsMono", "Font Awesome 6 Free", "Font Awesome 6 Brands", sans-serif;
+    font-size: 13px;
+    min-height: 0;
+}
+
+/* Barra principale */
+window#waybar {
+    background: #1E1E2E;
+    color: #CDD6F4;
+    border-bottom: 2px solid #11111B;
+}
+
+/* Moduli (spaziatura e stile di base) */
+#cpu,
+#memory,
+#temperature,
+#backlight,
+#battery,
+#network,
+#pulseaudio,
+#clock,
+#tray {
+    padding: 0 10px;
+    margin: 0 3px;
+    border-radius: 4px;
+    background: #313244;
+}
+
+/* Hover */
+#workspaces button:hover,
+#cpu:hover,
+#memory:hover,
+#temperature:hover,
+#backlight:hover,
+#battery:hover,
+#network:hover,
+#pulseaudio:hover,
+#clock:hover {
+    background: #45475A;
+}
+
+/* Colore del testo/icona per i workspace NON attivi e leggibili */
+#workspaces button {
+    /* Imposta il colore del testo su un colore chiaro e leggibile */
+    color: #CDD6F4; /* Testo chiaro, come il testo principale della barra */
+    background: #313244;
+}
+
+/* Colore per distinguere i moduli di sinistra */
+#mode,
+#window {
+    background: #313244;
+    color: #FAB387; /* Giallo/Arancio chiaro per il testo di Modalità e Finestra */
+}
+/* Lo stile per il workspace attivo */
+#workspaces button.focused {
+    background: #A6E3A1;
+    color: #1E1E2E; /* Testo scuro su sfondo chiaro, leggibile */
+}
+/* Volume */
+#pulseaudio.muted {
+    color: #F38BA8;
+}
+/*keyboard layout*/
+#sway-language {
+    padding: 0 10px;
+    margin: 0 3px;
+    border-radius: 4px;
+    background: #313244; /* come gli altri */
+    color: #CDD6F4;
+}
+
+#sway-language:hover {
+    background: #45475A;
+}
+/* Rete */
+#network.disconnected {
+    color: #F38BA8;
+}
+
+/* Batteria */
+#battery {
+    color: #A6E3A1;
+}
+#battery.warning {
+    color: #F9E2AF;
+}
+#battery.critical {
+    color: #F38BA8;
+}
+
+/* Temperatura critica */
+#temperature.critical {
+    color: #F38BA8;
+}
+
+/* Tooltip */
+tooltip {
+    background: #313244;
+    color: #CDD6F4;
+    border: 1px solid #45475A;
+}
+
+#custom-power {
+    padding: 0 10px;
+    background: #f38ba8;
+    color: #1e1e2e;
+    border-radius: 4px;
+}
+#custom-power:hover {
+    background: #f7768e;
+}

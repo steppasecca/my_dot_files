@@ -62,8 +62,8 @@
         },
         "format": "{capacity}% <span font_size='x-large'>{icon}</span>",
         "format-full": "{capacity}% <span font_size='x-large'>{icon}</span>",
-        "format-charging": "{capacity}% <span font_size='x-large'></span>",
-        "format-plugged": "{capacity}% <span font_size='x-large'></span>",
+        "format-charging": "{capacity}% <span font_size='x-large'>󰂄</span>",
+        "format-plugged": "{capacity}% <span font_size='x-large'></span>",
         "format-alt": "{time} <span font_size='x-large'>{icon}</span>",
         "format-icons": ["", "", "", "", ""]
     },
@@ -79,7 +79,7 @@
         "format": "{volume}% <span font_size='x-large'>{icon}</span> {format_source}",
         "format-bluetooth": "{volume}% <span font_size='x-large'>{icon}</span><span font_size='x-large'></span> {format_source}",
         "format-bluetooth-muted": "<span font_size='x-large'></span> <span font_size='x-large'>{icon}</span><span font_size='x-large'></span> {format_source}",
-        "format-muted": "<span font_size='x-large'></span> {format_source}",
+        "format-muted": "<span font_size='x-large'></span> {format_source}",
         "format-source": "{volume}% <span font_size='x-large'></span>",
         "format-source-muted": "<span font_size='x-large'></span>",
         "format-icons": {
