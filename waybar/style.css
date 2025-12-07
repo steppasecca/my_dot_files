@@ -1,106 +1,97 @@
-/* Font generale per tutta la Waybar */
+/* File autogenerato dal tema, importato qui */
+
 * {
-    font-family: "JetBrainsMono Nerd Font", "Font Awesome 6 Free", "Font Awesome 6 Brands", sans-serif;
-    font-size: 13px;
-    min-height: 0;
+    font-family: "FiraCode Nerd Font mono", FontAwesome, sans-serif;
+    font-size: 15px;
 }
 
-/* Barra principale */
 window#waybar {
-    background: #1E1E2E;
-    color: #CDD6F4;
-    border-bottom: 2px solid #11111B;
+    background: @barBackground;
+    color: @barForeground;
+    transition-property: background-color;
+    transition-duration: .5s;
 }
 
-/* Moduli (spaziatura e stile di base) */
-#workspaces button,
-#mode,
-#window,
+/* Stile generico per tutti i moduli */
+#clock,
+#battery,
 #cpu,
 #memory,
+#disk,
 #temperature,
 #backlight,
-#battery,
 #network,
 #pulseaudio,
-#clock,
-#tray {
+#wireplumber,
+#custom-media,
+#tray,
+#mode,
+#custom-power,
+#language,
+#keyboard-state {
+    background-color: @moduleBackground;
     padding: 0 10px;
-    margin: 0 3px;
+    margin: 2px 2px;
+    border: 1px solid @moduleBorder;
     border-radius: 4px;
-    background: #313244;
 }
 
-/* Hover */
-#workspaces button:hover,
-#cpu:hover,
-#memory:hover,
-#temperature:hover,
-#backlight:hover,
-#battery:hover,
-#network:hover,
-#pulseaudio:hover,
-#clock:hover {
-    background: #45475A;
+/* Stile per i workspace */
+#workspaces button {
+    padding: 0 5px;
+    color: @barForeground;
+    background-color: transparent;
+    border: none;
+    border-radius: 0;
+    box-shadow: inset 0 -2px transparent;
 }
 
-/* Workspace attivo */
+#workspaces button:hover {
+    background: rgba(0, 0, 0, 0.2);
+    box-shadow: inset 0 -2px @barForeground;
+}
+
 #workspaces button.focused {
-    background: #A6E3A1;
-    color: #1E1E2E;
+    color: @focusedForeground;
+    background-color: @focusedBackground;
 }
 
-/* Volume */
-#pulseaudio.muted {
-    color: #F38BA8;
-}
-/*keyboard layout*/
-#sway-language {
-    padding: 0 10px;
-    margin: 0 3px;
-    border-radius: 4px;
-    background: #313244; /* come gli altri */
-    color: #CDD6F4;
+#workspaces button.urgent {
+    background-color: @urgentBackground;
+    color: #ffffff; /* Testo bianco per contrasto */
 }
 
-#sway-language:hover {
-    background: #45475A;
-}
-/* Rete */
-#network.disconnected {
-    color: #F38BA8;
+/* Stile per stati critici/speciali */
+#mode {
+    color: @focusedForeground;
+    background-color: @focusedBackground;
 }
 
-/* Batteria */
-#battery {
-    color: #A6E3A1;
-}
-#battery.warning {
-    color: #F9E2AF;
-}
-#battery.critical {
-    color: #F38BA8;
-}
-
-/* Temperatura critica */
-#temperature.critical {
-    color: #F38BA8;
+#battery.critical:not(.charging) {
+    background-color: @criticalBackground;
+    color: #ffffff;
+    animation-name: blink;
+    animation-duration: 0.5s;
+    animation-timing-function: steps(12);
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
 }
 
-/* Tooltip */
-tooltip {
-    background: #313244;
-    color: #CDD6F4;
-    border: 1px solid #45475A;
+@keyframes blink {
+    to {
+        background-color: @barForeground;
+        color: @barBackground;
+    }
 }
 
-#custom-power {
-    padding: 0 10px;
-    background: #f38ba8;
-    color: #1e1e2e;
-    border-radius: 4px;
-}
-#custom-power:hover {
-    background: #f7768e;
-}
+/* ATTENZIONE: File generato automaticamente. Non modificare. */
+/* Tema: Desert Mojave) */
 
+@define-color barBackground #181926;
+@define-color barForeground #CAD3F5;
+@define-color moduleBackground #494D64;
+@define-color moduleBorder #6E738D;
+@define-color focusedBackground #8087A2;
+@define-color focusedForeground #181926;
+@define-color urgentBackground #494D64;
+@define-color criticalBackground #494D64;
