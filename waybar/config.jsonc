@@ -57,9 +57,14 @@
     },
     "battery": {
         "states": {
-            "warning": 30,
-            "critical": 15
+            "warning": 20,
+            "critical": 10
         },
+"events": {
+        "on-discharging-warning": "notify-send -u normal -i 'battery-low' 'Attenzione Batteria' 'Il livello è sceso al 20%. Carica presto.'",
+        
+        "on-discharging-critical": "notify-send -u critical -i 'battery-empty' 'BATTERIA CRITICA!' 'Il livello è CRITICO (15%). Collega immediatamente il caricabatterie.'"
+    },
         "format": "{capacity}% <span font_size='x-large'>{icon}</span>",
         "format-full": "{capacity}% <span font_size='x-large'>{icon}</span>",
         "format-charging": "{capacity}% <span font_size='x-large'>󰂄</span>",

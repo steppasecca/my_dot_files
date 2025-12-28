@@ -25,7 +25,7 @@ font pango:JetBrainsMono Nerd Font 14
 ### Output configuration
 #
 # Default wallpaper (more resolutions are available in /usr/share/backgrounds/sway/)
-output * bg ~/Pictures/tor_computer_wallpaper.png fill
+output * bg ~/Pictures/wallpapers/pinguini.jpg fill
 #
 # Example configuration:
 #
@@ -216,7 +216,9 @@ bindsym $mod+r mode "resize"
     # Special keys to adjust brightness via brightnessctl
     bindsym --locked XF86MonBrightnessDown exec brightnessctl set 5%-
     bindsym --locked XF86MonBrightnessUp exec brightnessctl set 5%+
-
+	
+	# special key that call a sh script to toggle keyboard's backlight
+	bindsym --locked XF86KbdLightOnOff exec sudo /usr/local/bin/back_light_toggle.sh
 #sh script that open a menu in which you can choose to take 
 #or not the screeshot or if needs to be copied in the clipboard 
 bindsym Print exec ~/.dotfiles/sway/screenshot_selector.sh
