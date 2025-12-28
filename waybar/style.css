@@ -1,5 +1,3 @@
-/* File autogenerato dal tema, importato qui */
-
 * {
     font-family: "FiraCode Nerd Font mono", FontAwesome, sans-serif;
     font-size: 16px;
@@ -22,7 +20,6 @@ window#waybar {
 #backlight,
 #network,
 #pulseaudio,
-#wireplumber,
 #custom-media,
 #tray,
 #mode,
@@ -34,6 +31,7 @@ window#waybar {
     margin: 2px 2px;
     border: 1px solid @moduleBorder;
     border-radius: 4px;
+	min-width: 25px;
 }
 
 /* Stile per i workspace */

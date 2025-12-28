@@ -57,8 +57,11 @@ exec swayidle -w \
    }
 #
 #----------------------------keyboard----------------------------
-   input type:keyboard {
-       xkb_layout "it,us"
+	input type:keyboard {
+		xkb_layout "it,us"
+		xkb_variant ",altgr-intl"
+		xkb_options "grp:shifts_toggle"
+		
    }
 #
 
@@ -76,10 +79,10 @@ exec swayidle -w \
     bindsym $mod+d exec  $menu --show drun
 
 	#start the file manager
+	#rotto perché a yazi serve un terminale per partire
+	#TODO da aggiustare
 	bindsym $mod+shift+f exec $file_manager
 
-	#change beetwin keyboard layout
-	bindsym $mod+Shift+space exec swaymsg input type:keyboard xkb_switch_layout next
 
     # Drag floating windows by holding down $mod and left mouse button.
     # Resize them with right mouse button + $mod.
