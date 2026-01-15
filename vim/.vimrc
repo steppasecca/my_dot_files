@@ -53,11 +53,11 @@ set wildignore=*.docx,*.jpg,*.png,*.gif,*.pdf,*.pyc,*.exe,*.flv,*.img,*.xlsx
 "}}}
 
 "PLUGINS--------------------------------{{{			
-call plug#begin('~/.vim/plugged') 
-  Plug 'vim-airline/vim-airline'
-  Plug 'vim-airline/vim-airline-themes'
-  Plug 'jasonccox/vim-wayland-clipboard'
-call plug#end()
+"call plug#begin('~/.vim/plugged') 
+  "Plug 'vim-airline/vim-airline'
+  "Plug 'vim-airline/vim-airline-themes'
+  "Plug 'jasonccox/vim-wayland-clipboard'
+"call plug#end()
 "}}}
 
 "VIMSCRIPT-----------------------------------------{{{
@@ -106,3 +106,4 @@ set laststatus=2
 set statusline=%F%m%r%h%w\ [FORMAT=%{&ff}]\ [TYPE=%Y]\ [POS=%l,%v][%p%%]\ %{strftime(\"%Y-%m-%d\ %H:%M:%S\ %Z\")}
 
 "}}}
+
