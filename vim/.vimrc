@@ -52,13 +52,14 @@ set wildmode=list:longest
 set wildignore=*.docx,*.jpg,*.png,*.gif,*.pdf,*.pyc,*.exe,*.flv,*.img,*.xlsx
 "}}}
 
-""PLUGINS--------------------------------{{{			
-"call plug#begin('~/.vim/plugged') 
+"PLUGINS--------------------------------{{{			
+call plug#begin('~/.vim/plugged') 
 "  Plug 'vim-airline/vim-airline'
 "  Plug 'vim-airline/vim-airline-themes'
 "  Plug 'jasonccox/vim-wayland-clipboard'
-"call plug#end()
-""}}}
+  Plug 'https://github.com/sheerun/vim-polyglot'
+call plug#end()
+"}}}
 
 "VIMSCRIPT-----------------------------------------{{{
 " Questo abilita la piegatura del codice.
