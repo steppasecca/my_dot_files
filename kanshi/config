@@ -1,0 +1,22 @@
+# Profilo 1: Quando sei in giro solo con il portatile
+profile nomonitor {
+    output eDP-1 enable
+}
+
+# Profilo 2: monitor esterno sulla destra portatile acceso
+profile scrivania_work {
+    # Mantiene acceso lo schermo del portatile
+    output eDP-1 enable position 0,0
+
+    # Accende il monitor esterno e lo posiziona alla destra del portatile
+    output DP-4 enable position 1920,0
+}
+
+# Profilo 3: monitor esterno portatile spento
+profile scrivania_work {
+	#portatile spento
+	output eDP-1 disable
+
+	#schermo secondario acceso
+    output HDMI-A-1 enable position 0,0
+}

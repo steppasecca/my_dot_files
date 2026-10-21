@@ -1,7 +1,7 @@
 "IMPOSTAZIoni di base------------------------------{{{
 
 "Imposta come registro predefinito quello di sistema
-set clipboard=unnamedplus
+set clipboard=unnamed
 
 " Disabilita la compatibilità con vi che può causare problemi inaspettati.
 set nocompatible

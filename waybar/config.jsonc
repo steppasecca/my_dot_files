@@ -9,6 +9,8 @@
         "sway/window"
     ],
     "modules-right": [
+        "custom/monitor2",
+        "custom/monitor3",
         "pulseaudio",
 		"sway/language",
         "network",
@@ -107,6 +109,20 @@
     "tooltip": "Menu alimentazione",
     "on-click": "~/.config/waybar/scripts/power-menu.sh",
     "interval": 0
-	}
+	},
+
+"custom/monitor2": {
+    "exec": "$HOME/.config/waybar/monitor_toggle.sh DP-3",
+    "return-type": "json",
+    "interval": 2,
+    "on-click": "swaymsg exec 'sh -c \"sleep 0.2 && swaymsg output DP-3 toggle\"'"
+},
+
+"custom/monitor3": {
+    "exec": "$HOME/.config/waybar/monitor_toggle.sh DP-4",
+    "return-type": "json",
+    "interval": 2,
+    "on-click": "swaymsg exec 'sh -c \"sleep 0.2 && swaymsg output DP-4 toggle\"'"
+}
 
 }
