@@ -1,7 +1,7 @@
 "IMPOSTAZIoni di base------------------------------{{{
 
 "Imposta come registro predefinito quello di sistema
-set clipboard=unnamed
+set clipboard=unnamedplus
 
 " Disabilita la compatibilità con vi che può causare problemi inaspettati.
 set nocompatible
@@ -58,6 +58,7 @@ call plug#begin('~/.vim/plugged')
 "  Plug 'vim-airline/vim-airline-themes'
 "  Plug 'jasonccox/vim-wayland-clipboard'
   Plug 'https://github.com/sheerun/vim-polyglot'
+  Plug 'instant-markdown/vim-instant-markdown', {'for': 'markdown', 'do': 'npm install'}
 call plug#end()
 "}}}
 
