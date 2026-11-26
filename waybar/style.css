@@ -1,75 +1,105 @@
-/* File autogenerato dal tema, importato qui */
+/* cyberpunk palette — keep in sync with sway/config.d/variables.conf */
+@define-color bg       #0a0a12;
+@define-color surface  #12121f;
+@define-color surface2 #1a1a2e;
+@define-color fg       #d0d8f0;
+@define-color dim      #5c6384;
+@define-color cyan     #00f0ff;
+@define-color magenta  #ff2a6d;
+@define-color yellow   #fcee0a;
+@define-color green    #05ffa1;
+@define-color red      #ff3355;
+@define-color purple   #b967ff;
 
 * {
-    font-family: "FiraCode Nerd Font mono", FontAwesome, sans-serif;
-    font-size: 15px;
+    font-family: "JetBrainsMono Nerd Font", monospace;
+    font-size: 13px;
+    border: none;
+    border-radius: 0;
+    min-height: 0;
+    box-shadow: none;
+    text-shadow: none;
 }
 
 window#waybar {
-    background: @barBackground;
-    color: @barForeground;
-    transition-property: background-color;
-    transition-duration: .5s;
+    background: alpha(@bg, 0.94);
+    color: @fg;
+    border-bottom: 2px solid @cyan;
 }
 
-/* Stile generico per tutti i moduli */
-#clock,
-#battery,
-#cpu,
-#memory,
-#disk,
-#temperature,
-#backlight,
-#network,
-#pulseaudio,
-#wireplumber,
-#custom-media,
-#tray,
-#mode,
-#custom-power,
-#language,
-#keyboard-state {
-    background-color: @moduleBackground;
-    padding: 0 10px;
-    margin: 2px 2px;
-    border: 1px solid @moduleBorder;
-    border-radius: 4px;
+tooltip {
+    background: @bg;
+    border: 1px solid @cyan;
+}
+tooltip label {
+    color: @fg;
 }
 
-/* Stile per i workspace */
+/* ---- workspaces ---- */
 #workspaces button {
-    padding: 0 5px;
-    color: @barForeground;
-    background-color: transparent;
-    border: none;
-    border-radius: 0;
-    box-shadow: inset 0 -2px transparent;
+    padding: 0 10px;
+    color: @dim;
+    background: transparent;
+    border-bottom: 2px solid transparent;
 }
-
 #workspaces button:hover {
-    background: rgba(0, 0, 0, 0.2);
-    box-shadow: inset 0 -2px @barForeground;
+    background: @surface2;
+    color: @fg;
 }
-
 #workspaces button.focused {
-    color: @focusedForeground;
-    background-color: @focusedBackground;
+    color: @cyan;
+    background: @surface;
+    border-bottom: 2px solid @cyan;
 }
-
 #workspaces button.urgent {
-    background-color: @urgentBackground;
-    color: #ffffff; /* Testo bianco per contrasto */
+    color: @bg;
+    background: @magenta;
 }
 
-/* Stile per stati critici/speciali */
 #mode {
-    color: @focusedForeground;
-    background-color: @focusedBackground;
+    padding: 0 10px;
+    color: @bg;
+    background: @magenta;
 }
+
+#window {
+    padding: 0 12px;
+    color: @dim;
+}
+
+/* ---- modules ---- */
+#clock, #battery, #cpu, #memory, #temperature, #backlight, #network,
+#pulseaudio, #language, #tray, #custom-power,
+#custom-monitor2, #custom-monitor3 {
+    padding: 0 10px;
+    margin: 5px 3px;
+    background: @surface;
+    color: @fg;
+    border-bottom: 2px solid @dim;
+}
+
+#clock       { color: @cyan;    border-bottom-color: @cyan; }
+#cpu         { border-bottom-color: @cyan; }
+#memory      { border-bottom-color: @purple; }
+#temperature { border-bottom-color: @yellow; }
+#backlight   { border-bottom-color: @yellow; }
+#pulseaudio  { border-bottom-color: @magenta; }
+#network     { border-bottom-color: @green; }
+#battery     { border-bottom-color: @green; }
+#language    { color: @dim; }
+#custom-power { color: @magenta; border-bottom-color: @magenta; padding: 0 12px; }
+#custom-power:hover { background: @magenta; color: @bg; }
+
+#pulseaudio.muted    { color: @dim; }
+#network.disconnected { color: @magenta; border-bottom-color: @magenta; }
+#temperature.critical { color: @red; border-bottom-color: @red; }
+#battery.charging, #battery.plugged { color: @green; }
+#battery.warning:not(.charging) { color: @yellow; border-bottom-color: @yellow; }
 
 #battery.critical:not(.charging) {
-    background-color: @criticalBackground;
-    color: #ffffff;
+    color: @bg;
+    background: @red;
+    border-bottom-color: @red;
     animation-name: blink;
     animation-duration: 0.5s;
     animation-timing-function: steps(12);
@@ -79,19 +109,14 @@ window#waybar {
 
 @keyframes blink {
     to {
-        background-color: @barForeground;
-        color: @barBackground;
+        background-color: @bg;
+        color: @red;
     }
 }
 
-/* ATTENZIONE: File generato automaticamente. Non modificare. */
-/* Tema: Desert Mojave) */
+/* monitor toggles: classes come from monitor_toggle.sh */
+#custom-monitor2.connected, #custom-monitor3.connected { color: @green; border-bottom-color: @green; }
+#custom-monitor2.disconnected, #custom-monitor3.disconnected { color: @dim; border-bottom-color: @magenta; }
 
-@define-color barBackground #181926;
-@define-color barForeground #CAD3F5;
-@define-color moduleBackground #494D64;
-@define-color moduleBorder #6E738D;
-@define-color focusedBackground #8087A2;
-@define-color focusedForeground #181926;
-@define-color urgentBackground #494D64;
-@define-color criticalBackground #494D64;
+#tray > .passive { -gtk-icon-effect: dim; }
+#tray > .needs-attention { -gtk-icon-effect: highlight; }

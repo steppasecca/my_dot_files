@@ -1,0 +1,7 @@
+# Only your changes live here; the default keymap is built in.
+"$schema" = "https://yazi-rs.github.io/schemas/keymap.json"
+
+# y: copy files to the Wayland clipboard as file:// URIs, then yank as usual
+[[mgr.prepend_keymap]]
+on  = "y"
+run = [ 'shell -- for path in %s; do echo "file://$path"; done | wl-copy -t text/uri-list', "yank" ]

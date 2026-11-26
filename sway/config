@@ -1,10 +1,10 @@
-
-
+# sway — entry point. Order matters: variables first, then everything that uses them.
+# Includes are relative to this file, so the repo can be validated with: sway -C -c sway/config
 font pango:JetBrainsMono Nerd Font 13
 
-include /home/steppasecca/.config/sway/config.d/autostart.conf
-include /home/steppasecca/.config/sway/config.d/variables.conf
-include /home/steppasecca/.config/sway/config.d/keymaps.conf
-include /home/steppasecca/.config/sway/config.d/devices.conf
-include /home/steppasecca/.config/sway/config.d/windows_rules.conf
-include /home/steppasecca/.config/sway/config.d/windows_look.conf
+include config.d/variables.conf
+include config.d/windows_look.conf
+include config.d/devices.conf
+include config.d/keymaps.conf
+include config.d/windows_rules.conf
+include config.d/autostart.conf

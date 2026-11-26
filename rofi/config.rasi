@@ -1,0 +1,13 @@
+configuration {
+    modi: "drun,run,window";
+    font: "JetBrainsMono Nerd Font 12";
+    show-icons: false;
+    matching: "fuzzy";
+    terminal: "xdg-term";
+    drun-display-format: "{name}";
+    display-drun: ">";
+    display-run: "$";
+    display-window: "#";
+}
+
+@theme "cyberpunk"

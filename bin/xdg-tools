@@ -1,0 +1,344 @@
+#!/usr/bin/env bash
+# xdg-tools — default applications through the XDG specs instead of hardcoded programs.
+# One file, four commands (install.sh creates the symlinks):
+#   xdg-launch ROLE [ARGS]        start the default app of a role: terminal browser files editor mail
+#                                 (or any MIME type, e.g. xdg-launch video/mp4)
+#   xdg-run [--here] FILE...      open files with the default app of their MIME type
+#                                 --here: terminal apps run in the current terminal (used by yazi)
+#   xdg-pick [ROLE|--show|--init [--force]]
+#                                 choose defaults (fzf in a terminal, rofi otherwise, `select` as last resort)
+#   xdg-term [-e] [CMD...]        start the preferred terminal (optionally running CMD)
+# Terminal choice: ~/.config/xdg-terminals.list (xdg-terminal-exec convention) > $TERMINAL > known terminals.
+set -u
+
+CONFIG_HOME=${XDG_CONFIG_HOME:-$HOME/.config}
+IFS=: read -r -a _xdd <<<"${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
+DATA_DIRS=("${XDG_DATA_HOME:-$HOME/.local/share}" "${_xdd[@]}")
+
+ROLES=(terminal browser files editor video audio image pdf mail)
+
+# ---------------------------------------------------------------- helpers
+notify() {
+    command -v notify-send >/dev/null 2>&1 && notify-send -a xdg-tools "$1" "${2:-}" 2>/dev/null
+    printf '%s\n' "$1${2:+: $2}" >&2
+}
+
+usage() {
+    sed -n '2,12p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//' >&2
+    exit 2
+}
+
+find_desktop() {   # find_desktop ID|PATH -> absolute path of the .desktop file
+    local id=$1 d
+    if [[ $id == /* && -f $id ]]; then printf '%s\n' "$id"; return 0; fi
+    for d in "${DATA_DIRS[@]}"; do
+        if [[ -f $d/applications/$id ]]; then printf '%s\n' "$d/applications/$id"; return 0; fi
+    done
+    return 1
+}
+
+desktop_key() {    # desktop_key FILE KEY -> value from the [Desktop Entry] group
+    awk -v k="$2" '
+        /^\[/ { in_de = ($0 == "[Desktop Entry]"); next }
+        in_de { i = index($0, "="); if (i && substr($0, 1, i - 1) == k) { print substr($0, i + 1); exit } }
+    ' "$1"
+}
+
+mime_of() {        # mime_of FILE|URL -> MIME type
+    local f=$1 m=
+    case $f in
+        mailto:*) m=x-scheme-handler/mailto ;;
+        *://*)    m=x-scheme-handler/${f%%://*} ;;
+        *)  if [[ -d $f ]]; then
+                m=inode/directory
+            else
+                m=$(xdg-mime query filetype "$f" 2>/dev/null)
+                [[ -n $m ]] || m=$(file -b --mime-type -- "$f" 2>/dev/null)
+            fi ;;
+    esac
+    printf '%s\n' "${m:-application/octet-stream}"
+}
+
+default_id() {     # default_id MIME -> desktop id (falls back to text/plain for text-like types)
+    local mime=$1 id
+    id=$(xdg-mime query default "$mime" 2>/dev/null)
+    if [[ -z $id && $mime != text/plain ]]; then
+        case $mime in
+            text/*|application/json|application/x-ndjson|application/xml|application/javascript|\
+            application/x-shellscript|application/toml|application/yaml|inode/x-empty|application/x-zerosize)
+                id=$(xdg-mime query default text/plain 2>/dev/null) ;;
+        esac
+    fi
+    printf '%s\n' "$id"
+}
+
+build_cmd() {      # build_cmd "<Exec>" "<Name>" FILES... -> fills the CMD array (field codes expanded)
+    local line=$1 name=$2 t; shift 2
+    local -a toks
+    CMD=()
+    read -r -a toks <<<"$line"
+    for t in "${toks[@]}"; do
+        case $t in
+            %f|%F|%u|%U) CMD+=("$@") ;;
+            %c) CMD+=("$name") ;;
+            %i|%k|%d|%D|%n|%N|%v|%m) ;;
+            *) CMD+=("${t//%%/%}") ;;
+        esac
+    done
+}
+
+# ---------------------------------------------------------------- terminal
+term_cmd() {       # sets TERM_CMD (binary) and TERM_FLAG (flag that precedes the command to run)
+    local list=$CONFIG_HOME/xdg-terminals.list id f bin flag t
+    TERM_CMD=(); TERM_FLAG=-e
+    if [[ -r $list ]]; then
+        while IFS= read -r id; do
+            id=${id%%#*}; id=${id//[[:space:]]/}
+            [[ -n $id ]] || continue
+            f=$(find_desktop "$id") || continue
+            bin=$(desktop_key "$f" Exec); bin=${bin%% *}
+            command -v "$bin" >/dev/null 2>&1 || continue
+            if grep -q '^X-TerminalArgExec=' "$f"; then flag=$(desktop_key "$f" X-TerminalArgExec); else flag=-e; fi
+            case ${bin##*/} in foot|footclient) flag= ;; esac   # foot takes the command positionally
+            TERM_CMD=("$bin"); TERM_FLAG=$flag; return 0
+        done <"$list"
+    fi
+    for t in "${TERMINAL:-}" foot alacritty kitty wezterm ghostty xterm; do
+        [[ -n $t && ${t##*/} != xdg-term ]] || continue
+        command -v "$t" >/dev/null 2>&1 || continue
+        TERM_CMD=("$t"); TERM_FLAG=-e
+        case ${t##*/} in foot|footclient) TERM_FLAG= ;; esac
+        return 0
+    done
+    return 1
+}
+
+cmd_term() {
+    [[ ${1:-} == -e ]] && shift
+    term_cmd || { notify "No terminal found" "install one or run: xdg-pick terminal"; return 1; }
+    if (( $# )); then exec "${TERM_CMD[@]}" ${TERM_FLAG:+"$TERM_FLAG"} "$@"; fi
+    exec "${TERM_CMD[@]}"
+}
+
+# ---------------------------------------------------------------- launching
+launch_entry() {   # launch_entry DESKTOP_ID HERE(0|1) [FILES...]
+    local id=$1 here=$2; shift 2
+    local f term name execl
+    f=$(find_desktop "$id") || { notify "Desktop entry not found" "$id"; return 1; }
+    execl=$(desktop_key "$f" Exec); term=$(desktop_key "$f" Terminal); name=$(desktop_key "$f" Name)
+
+    if [[ ${term,,} == true ]]; then
+        build_cmd "$execl" "$name" "$@"
+        if (( here )); then "${CMD[@]}"; return $?; fi
+        term_cmd || { notify "No terminal found" "needed for $name"; return 1; }
+        setsid -f "${TERM_CMD[@]}" ${TERM_FLAG:+"$TERM_FLAG"} "${CMD[@]}" >/dev/null 2>&1
+    elif command -v gio >/dev/null 2>&1; then
+        setsid -f gio launch "$f" "$@" >/dev/null 2>&1
+    else
+        build_cmd "$execl" "$name" "$@"
+        setsid -f "${CMD[@]}" >/dev/null 2>&1
+    fi
+}
+
+cmd_launch() {
+    local role=${1:-} mime id
+    [[ -n $role ]] || usage
+    shift
+    case $role in
+        terminal|term)        cmd_term "$@"; return ;;
+        browser|web)          mime=x-scheme-handler/https ;;
+        files|filemanager|fm) mime=inode/directory; (( $# )) || set -- "$HOME" ;;
+        editor|text)          mime=text/plain ;;
+        mail|email)           mime=x-scheme-handler/mailto ;;
+        */*)                  mime=$role ;;
+        *)                    usage ;;
+    esac
+    id=$(default_id "$mime")
+    if [[ -z $id ]]; then
+        if [[ $role == browser || $role == web ]] && [[ -n ${BROWSER:-} ]]; then exec "$BROWSER" "$@"; fi
+        notify "No default application for '$role'" "run: xdg-pick $role"
+        return 1
+    fi
+    launch_entry "$id" 0 "$@"
+}
+
+cmd_run() {
+    local here=0 forced='' f mime id rc=0
+    while (( $# )); do
+        case $1 in
+            --here) here=1; shift ;;
+            --mime) forced=${2:-}; shift 2 ;;
+            --) shift; break ;;
+            -*) usage ;;
+            *) break ;;
+        esac
+    done
+    (( $# )) || usage
+    local -A buckets=()
+    for f in "$@"; do
+        mime=${forced:-$(mime_of "$f")}
+        id=$(default_id "$mime")
+        if [[ -z $id ]]; then notify "No default application for $mime" "run: xdg-pick"; rc=1; continue; fi
+        buckets[$id]+="$f"$'\n'
+    done
+    for id in "${!buckets[@]}"; do
+        local -a files=()
+        mapfile -t files <<<"${buckets[$id]%$'\n'}"
+        launch_entry "$id" "$here" "${files[@]}" || rc=1
+    done
+    return $rc
+}
+
+# ---------------------------------------------------------------- choosing defaults
+role_mimes() {
+    case $1 in
+        browser) echo "x-scheme-handler/http x-scheme-handler/https text/html application/xhtml+xml" ;;
+        files)   echo "inode/directory" ;;
+        editor)  echo "text/plain text/markdown" ;;
+        video)   echo "video/mp4 video/x-matroska video/webm video/x-msvideo video/quicktime video/mpeg video/ogg video/x-flv video/mp2t video/3gpp" ;;
+        audio)   echo "audio/mpeg audio/flac audio/ogg audio/x-wav audio/mp4 audio/aac audio/opus audio/x-vorbis+ogg audio/webm" ;;
+        image)   echo "image/png image/jpeg image/gif image/webp image/svg+xml image/avif image/bmp image/tiff" ;;
+        pdf)     echo "application/pdf" ;;
+        mail)    echo "x-scheme-handler/mailto" ;;
+    esac
+}
+
+role_match() {     # pattern that candidate .desktop files must declare in MimeType=
+    case $1 in
+        browser) echo "x-scheme-handler/https" ;;
+        files)   echo "inode/directory" ;;
+        editor)  echo "text/plain" ;;
+        video)   echo "video/" ;;
+        audio)   echo "audio/" ;;
+        image)   echo "image/" ;;
+        pdf)     echo "application/pdf" ;;
+        mail)    echo "x-scheme-handler/mailto" ;;
+    esac
+}
+
+seed_prefs() {     # first existing entry wins in `xdg-pick --init`
+    case $1 in
+        terminal) echo "foot.desktop Alacritty.desktop kitty.desktop" ;;
+        browser)  echo "librewolf-appimage.desktop librewolf.desktop firefox.desktop" ;;
+        files)    echo "yazi.desktop" ;;
+        editor)   echo "vim.desktop gvim.desktop nvim.desktop" ;;
+        video)    echo "vlc.desktop mpv.desktop" ;;
+        audio)    echo "vlc.desktop mpv.desktop" ;;
+        image)    echo "imv.desktop swayimg.desktop" ;;
+        pdf)      echo "org.pwmt.zathura.desktop zathura.desktop" ;;
+    esac
+}
+
+menu() {           # menu PROMPT  (items on stdin) -> chosen line. Override with XDG_PICK_MENU="fuzzel -d"
+    local prompt=$1 items; items=$(cat)
+    [[ -n $items ]] || return 1
+    if [[ -n ${XDG_PICK_MENU:-} ]]; then
+        local -a custom; read -r -a custom <<<"$XDG_PICK_MENU"
+        "${custom[@]}" <<<"$items"
+    elif [[ -t 1 ]] && command -v fzf >/dev/null 2>&1; then
+        fzf --prompt "$prompt> " <<<"$items"
+    elif [[ -n ${WAYLAND_DISPLAY:-} ]] && command -v rofi >/dev/null 2>&1; then
+        rofi -dmenu -i -p "$prompt" <<<"$items"
+    else
+        local -a arr; local choice PS3="$prompt: "
+        mapfile -t arr <<<"$items"
+        select choice in "${arr[@]}"; do [[ -n $choice ]] && { printf '%s\n' "$choice"; break; }; done </dev/tty
+    fi
+}
+
+candidates() {     # candidates KEY PATTERN -> "Name  [id.desktop]" for entries whose KEY matches
+    local key=$1 pat=$2 d f id name
+    local -A seen=()
+    for d in "${DATA_DIRS[@]}"; do
+        [[ -d $d/applications ]] || continue
+        while IFS= read -r f; do
+            id=${f##*/}
+            [[ -z ${seen[$id]:-} ]] || continue
+            seen[$id]=1
+            [[ $(desktop_key "$f" Hidden) != true ]] || continue
+            name=$(desktop_key "$f" Name)
+            printf '%s  [%s]\n' "${name:-$id}" "$id"
+        done < <(grep -l "^${key}=.*${pat}" "$d"/applications/*.desktop 2>/dev/null)
+    done | sort -f
+}
+
+set_default() {    # set_default ROLE DESKTOP_ID
+    local role=$1 id=$2 m
+    if [[ $role == terminal ]]; then
+        mkdir -p "$CONFIG_HOME"
+        printf '%s\n' "$id" >"$CONFIG_HOME/xdg-terminals.list"
+    else
+        for m in $(role_mimes "$role"); do xdg-mime default "$id" "$m"; done
+    fi
+}
+
+explicit_default() {   # explicit_default ROLE -> desktop id written in mimeapps.list (empty if only implicit)
+    local role=$1 mime f v
+    if [[ $role == terminal ]]; then current_default terminal; return; fi
+    mime=$(role_mimes "$role" | cut -d' ' -f1)
+    for f in "$CONFIG_HOME/mimeapps.list" "${XDG_DATA_HOME:-$HOME/.local/share}/applications/mimeapps.list"; do
+        [[ -r $f ]] || continue
+        v=$(awk -v m="$mime" '/^\[/ {d = ($0 == "[Default Applications]"); next} d && index($0, m "=") == 1 { sub(/^[^=]*=/, ""); print; exit }' "$f")
+        v=${v%%;*}
+        [[ -n $v ]] && { printf '%s\n' "$v"; return; }
+    done
+}
+
+current_default() {
+    if [[ $1 == terminal ]]; then
+        grep -v '^[[:space:]]*#' "$CONFIG_HOME/xdg-terminals.list" 2>/dev/null | grep -m1 . || true
+    else
+        default_id "$(role_mimes "$1" | cut -d' ' -f1)"
+    fi
+}
+
+pick_role() {
+    local role=$1 choice id
+    if [[ $role == terminal ]]; then
+        choice=$(candidates Categories TerminalEmulator | menu terminal) || return 1
+    else
+        [[ -n $(role_match "$role") ]] || { echo "unknown role: $role" >&2; return 1; }
+        choice=$(candidates MimeType "$(role_match "$role")" | menu "$role") || return 1
+    fi
+    id=${choice##*\[}; id=${id%\]}
+    [[ -n $id ]] || return 1
+    set_default "$role" "$id"
+    notify "Default $role" "$id"
+}
+
+cmd_pick() {
+    local arg=${1:-} role id force=0 cur
+    case $arg in
+        --show)
+            for role in "${ROLES[@]}"; do
+                cur=$(current_default "$role")
+                printf '%-9s %s%s\n' "$role" "$cur" "$([[ -n $cur && -z $(explicit_default "$role") ]] && echo '   (implicit: nothing chosen, first app that claims the type)')"
+            done ;;
+        --init)
+            [[ ${2:-} == --force ]] && force=1
+            for role in "${ROLES[@]}"; do
+                cur=$(explicit_default "$role")
+                if [[ -n $cur ]] && (( ! force )); then printf '%-9s keep   %s\n' "$role" "$cur"; continue; fi
+                for id in $(seed_prefs "$role"); do
+                    if find_desktop "$id" >/dev/null; then
+                        set_default "$role" "$id"; printf '%-9s set    %s\n' "$role" "$id"; continue 2
+                    fi
+                done
+                printf '%-9s none   (no preferred app installed)\n' "$role"
+            done ;;
+        "")
+            role=$(printf '%s\n' "${ROLES[@]}" | menu "default for") || return 1
+            pick_role "$role" ;;
+        *)  pick_role "$arg" ;;
+    esac
+}
+
+# ---------------------------------------------------------------- dispatch
+case ${0##*/} in
+    xdg-launch) cmd_launch "$@" ;;
+    xdg-run)    cmd_run "$@" ;;
+    xdg-pick)   cmd_pick "$@" ;;
+    xdg-term)   cmd_term "$@" ;;
+    *)  sub=${1:-}; shift || true
+        case $sub in launch|run|pick|term) "cmd_$sub" "$@" ;; *) usage ;; esac ;;
+esac

@@ -1,62 +1,45 @@
 #!/bin/bash
-
-# --- CONFIGURAZIONE ---
+# Screenshot menu on rofi + grim/slurp. Copies to clipboard or saves to ~/Pictures/Screenshots.
 SAVE_DIR="$HOME/Pictures/Screenshots"
-# Comando Rofi ottimizzato: dmenu mode, case-insensitive, con titolo personalizzato
-ROFI_CMD="rofi -dmenu -i -p"
-
-# Crea la directory di salvataggio se non esiste
 mkdir -p "$SAVE_DIR"
+TEMP_FILE=$(mktemp --suffix=.png)
+trap 'rm -f "$TEMP_FILE"' EXIT
 
-# 1. MENU DI SCELTA INIZIALE
-CAPTURE_TYPE=$(echo -e "Area\nSchermo Intero\nAnnulla" | $ROFI_CMD "Scegli Cattura")
+pick() { rofi -dmenu -i -p "$1"; }
 
-TEMP_FILE="$(mktemp --suffix=.png)"
+CAPTURE_TYPE=$(printf '%s\n' "Area" "Schermo Intero" "Annulla" | pick "Cattura")
 
 case "$CAPTURE_TYPE" in
     "Area")
-        notify-send "Grimshot" "Seleziona l'area da catturare..."
-        # Utilizziamo slurp e grim. Se slurp viene annullato (Esc), grim fallirà.
-        grim -g "$(slurp)" "$TEMP_FILE"
-        CAPTURE_STATUS=$?
+        GEOMETRY=$(slurp) || exit 0          # Esc during selection = cancel
+        grim -g "$GEOMETRY" "$TEMP_FILE"
         ;;
     "Schermo Intero")
         grim "$TEMP_FILE"
-        CAPTURE_STATUS=$?
         ;;
     *)
-        rm -f "$TEMP_FILE"
         exit 0
         ;;
 esac
 
-# 2. Verifica se la cattura è riuscita
-if [ $CAPTURE_STATUS -ne 0 ] || [ ! -s "$TEMP_FILE" ]; then
-    rm -f "$TEMP_FILE"
-    notify-send "Grimshot" "Cattura annullata o fallita."
-    exit 0
+if [ ! -s "$TEMP_FILE" ]; then
+    notify-send "Screenshot" "Cattura fallita."
+    exit 1
 fi
 
-# 3. MENU DI SCELTA FINALE
-ACTION_CHOICE=$(echo -e "Copia negli Appunti\nSalva\nAnnulla" | $ROFI_CMD "Azione per lo screenshot")
+ACTION=$(printf '%s\n' "Copia negli Appunti" "Salva" "Annulla" | pick "Azione")
 
-case "$ACTION_CHOICE" in
+case "$ACTION" in
     "Copia negli Appunti")
         wl-copy --type image/png < "$TEMP_FILE"
-        notify-send "📋 Screenshot" "Copiato negli Appunti."
+        notify-send "Screenshot" "Copiato negli appunti."
         ;;
     "Salva")
-        TIMESTAMP=$(date +%Y-%m-%d_%H-%M-%S)
-        FILENAME="screenshot_${CAPTURE_TYPE// /_}_$TIMESTAMP.png"
+        FILENAME="screenshot_${CAPTURE_TYPE// /_}_$(date +%Y-%m-%d_%H-%M-%S).png"
         mv "$TEMP_FILE" "$SAVE_DIR/$FILENAME"
-        notify-send "📷 Screenshot" "Salvato in: $FILENAME"
+        notify-send "Screenshot" "Salvato in: $FILENAME"
         ;;
     *)
-        rm -f "$TEMP_FILE"
-        notify-send "Grimshot" "Operazione annullata."
-        exit 0
+        notify-send "Screenshot" "Operazione annullata."
         ;;
 esac
-
-# Pulizia finale (se non già spostato o rimosso)
-rm -f "$TEMP_FILE"

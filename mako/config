@@ -1,19 +1,31 @@
-# Appearance {{{
-font=Inter Medium 11
-width=350
-padding=10
-margin=10
+font=JetBrainsMono Nerd Font 11
+background-color=#0a0a12ee
+text-color=#d0d8f0
+border-color=#00f0ff
+progress-color=over #1a1a2e
+width=360
+margin=12
+padding=12
 border-size=2
-border-radius=8
+border-radius=0
+anchor=top-right
+layer=overlay
+max-visible=5
+default-timeout=6000
+icons=1
+max-icon-size=32
+markup=1
+format=<b>%s</b>\n%b
+on-button-middle=exec makoctl menu -n "$id" rofi -dmenu -p 'Azione'
+on-button-right=dismiss
 
-background-color=#1d202f
-border-color=#f7768e
-text-color=#c0caf5
-# }}}
-
-default-timeout=5000
-on-button-middle=exec makoctl menu -n "$id" wofi --dmenu -p 'Select action: '
+[urgency=low]
+border-color=#5c6384
+default-timeout=3000
 
 [urgency=high]
-border-color=#f7768e
-ignore-timeout=1
+border-color=#ff2a6d
+default-timeout=0
+
+[mode=do-not-disturb]
+invisible=1

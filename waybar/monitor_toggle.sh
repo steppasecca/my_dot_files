@@ -1,29 +1,15 @@
 #!/bin/bash
+# Waybar custom module: shows On/Off for one output. Prints nothing (module hidden) if the
+# output is not connected.   usage: monitor_toggle.sh DP-3
+monitor=${1:-}
+[ -n "$monitor" ] || exit 1
 
-MONITOR="$1"
+state=$(swaymsg -t get_outputs 2>/dev/null | jq -r --arg m "$monitor" '.[] | select(.name == $m) | .active')
+[ -n "$state" ] || exit 0
 
-if [ -z "$MONITOR" ]; then
-    exit 1
-fi
-
-# Recupera la lista di tutti gli output visti da Sway
-OUTPUTS=$(swaymsg -t get_outputs)
-
-# Verifica se il monitor specificato esiste nell'elenco (è collegato fisicamente)
-EXISTS=$(echo "$OUTPUTS" | jq -r "any(.[]; .name == \"$MONITOR\")")
-
-# Se il monitor non è collegato (EXISTS è diverso da "true"), esce senza stampare nulla.
-# Questo comunicherà a Waybar di nascondere il riquadro.
-if [ "$EXISTS" != "true" ]; then
-    exit 0
-fi
-
-# Se arriviamo qui, il monitor è collegato. Verifichiamo se è acceso (active) o spento.
-ACTIVE=$(echo "$OUTPUTS" | jq -r ".[] | select(.name==\"$MONITOR\") | .active")
-
-# Stampa il JSON formattato per Waybar
-if [ "$ACTIVE" = "true" ]; then
-    echo "{\"text\": \" $MONITOR: On\", \"class\": \"connected\", \"tooltip\": \"Monitor collegato e acceso\\nClicca per spegnere\"}"
+icon=$'\uf108'
+if [ "$state" = "true" ]; then
+    printf '{"text": "%s %s: On", "class": "connected", "tooltip": "Monitor collegato e acceso\\nClicca per spegnere"}\n' "$icon" "$monitor"
 else
-    echo "{\"text\": \" $MONITOR: Off\", \"class\": \"disconnected\", \"tooltip\": \"Monitor collegato ma spento\\nClicca per accendere\"}"
+    printf '{"text": "%s %s: Off", "class": "disconnected", "tooltip": "Monitor collegato ma spento\\nClicca per accendere"}\n' "$icon" "$monitor"
 fi
